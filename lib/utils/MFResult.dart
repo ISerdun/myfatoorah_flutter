@@ -22,6 +22,11 @@ class MFResult<T> {
   bool isSuccess() {
     return status == Status.SUCCESS && response != null;
   }
+
+  @override
+  String toString() {
+    return 'status: [$status]\nresponse: [$response]\nerror: [$error]';
+  }
 }
 
 enum Status { SUCCESS, ERROR }

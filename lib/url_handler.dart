@@ -13,8 +13,10 @@ class PaymentUrlHandler extends StatefulWidget {
   final bool isDirectPayment;
   final _SDKListener sdkListener;
   final _AppBarSpecs appBarSpecs;
+  final NavigatorState? navigator;
 
   PaymentUrlHandler({
+    this.navigator,
     required this.invoiceId,
     required this.paymentURL,
     this.isDirectPayment = false,
@@ -50,7 +52,7 @@ class _PaymentUrlHandlerState extends State<PaymentUrlHandler> {
         if (mounted) {
           if ((url.contains(AppConstants.callBackUrl!) ||
               url.contains(AppConstants.errorUrl!))) {
-            checkCallBacks(url);
+            checkCallBacks(url, widget.navigator?.context ?? context);
           }
         }
       });
@@ -138,7 +140,7 @@ class _PaymentUrlHandlerState extends State<PaymentUrlHandler> {
       return getWebViewForIOS(paymentURL);
   }
 
-  getWebViewForAndroid(String paymentURL) {
+  Widget getWebViewForAndroid(String paymentURL) {
     return WebView(
       initialUrl: paymentURL,
       javascriptMode: JavascriptMode.unrestricted,
@@ -150,7 +152,7 @@ class _PaymentUrlHandlerState extends State<PaymentUrlHandler> {
       },
       navigationDelegate: (NavigationRequest request) {
         print("navigationDelegate url: " + request.url);
-        checkCallBacks(request.url);
+        checkCallBacks(request.url, context);
         return NavigationDecision.navigate;
       },
       onPageFinished: (String url) {
@@ -160,7 +162,7 @@ class _PaymentUrlHandlerState extends State<PaymentUrlHandler> {
     );
   }
 
-  getWebViewForIOS(String paymentURL) {
+  Widget getWebViewForIOS(String paymentURL) {
     return WebviewScaffold(
       url: paymentURL,
       withJavascript: true,
@@ -178,16 +180,23 @@ class _PaymentUrlHandlerState extends State<PaymentUrlHandler> {
     );
   }
 
-  void checkCallBacks(String url) {
-    if ((url.contains(AppConstants.callBackUrl!) ||
-        url.contains(AppConstants.errorUrl!))) {
+  Future<void> checkCallBacks(String url, BuildContext context) async {
+    Uri uri = Uri.dataFromString(url);
+    final lastPart = uri.pathSegments.lastOrNull;
+    String? paymentId = uri.queryParameters["paymentId"];
+    log('[checkCallBacks] paymentId: $paymentId, lastPart: $lastPart');
+    if (paymentId != null &&
+        lastPart != null &&
+        lastPart.toLowerCase() == "result") {
       setWebViewVisibility(false);
-
-      Uri uri = Uri.dataFromString(url);
-      String? paymentId = uri.queryParameters["paymentId"];
-      var request = MFPaymentStatusRequest(paymentId: paymentId);
-      widget.sdkListener.fetchPaymentStatusByAPI(
-          widget.invoiceId, request, widget.isDirectPayment);
+      final request = MFPaymentStatusRequest(paymentId: paymentId);
+      final res = await widget.sdkListener.fetchPaymentStatusByAPI(
+        invoiceId: widget.invoiceId,
+        request: request,
+        isDirectPayment: widget.isDirectPayment,
+      );
+      log('[checkCallBacks] FOUND RESULT !! calling fetchPaymentStatusByAPI now');
+      widget.navigator?.pop(res);
     }
   }
 

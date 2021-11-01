@@ -13,4 +13,9 @@ class MFError {
     this.code = _code;
     this.message = _message;
   }
+
+  @override
+  String toString() {
+    return '($code) $message';
+  }
 }
