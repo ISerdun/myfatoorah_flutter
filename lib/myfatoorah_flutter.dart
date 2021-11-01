@@ -359,7 +359,7 @@ class MyFatoorahFlutter implements _SDKListener {
 
     if (statusCode < 200 || statusCode >= 400) {
       var mfError = getErrorMsg(statusCode, response.body);
-      func!(invoiceId, MFResult.fail<MFPaymentStatusResponse>(mfError));
+      func?.call(invoiceId, MFResult.fail<MFPaymentStatusResponse>(mfError));
 
       return;
     }
@@ -377,24 +377,30 @@ class MyFatoorahFlutter implements _SDKListener {
             transactionError);
 
         if (isDirectPayment)
-          func!(invoiceId, MFResult.fail<MFDirectPaymentResponse>(mfError));
+          func?.call(
+              invoiceId, MFResult.fail<MFDirectPaymentResponse>(mfError));
         else
-          func!(invoiceId, MFResult.fail<MFPaymentStatusResponse>(mfError));
+          func?.call(
+              invoiceId, MFResult.fail<MFPaymentStatusResponse>(mfError));
       } else {
         if (isDirectPayment) {
-          func!(
-              invoiceId,
-              MFResult.success(
-                  MFDirectPaymentResponse(result.data, cardInfoResponse)));
+          func?.call(
+            invoiceId,
+            MFResult.success(
+              MFDirectPaymentResponse(result.data, cardInfoResponse),
+            ),
+          );
         } else
-          func!(invoiceId, MFResult.success(result.data));
+          func?.call(invoiceId, MFResult.success(result.data));
       }
     } else {
       var error = MyBaseResponse.fromJson(json.decode(response.body));
-      func!(
-          invoiceId,
-          MFResult.fail<MFPaymentStatusResponse>(
-              new MFError(statusCode, parseErrorMessage(error))));
+      func?.call(
+        invoiceId,
+        MFResult.fail<MFPaymentStatusResponse>(
+          new MFError(statusCode, parseErrorMessage(error)),
+        ),
+      );
     }
   }
 
