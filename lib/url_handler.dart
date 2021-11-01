@@ -114,28 +114,29 @@ class _PaymentUrlHandlerState extends State<PaymentUrlHandler> {
                   ),
                 ])
           : null,
-      body: Container(
-          child: Column(children: <Widget>[
+      body: Column(children: <Widget>[
         Container(
-            padding: EdgeInsets.fromLTRB(0, 1, 0, 1),
-            child: isStillProgress(progress)
-                ? LinearProgressIndicator(value: setProgress(progress))
-                : Container()),
+          padding: EdgeInsets.fromLTRB(0, 1, 0, 1),
+          child: isStillProgress(progress)
+              ? LinearProgressIndicator(value: setProgress(progress))
+              : Container(),
+        ),
         Expanded(
           child: Container(
 //                  margin: const EdgeInsets.all(10.0),
 //                  decoration:
 //                  BoxDecoration(border: Border.all(color: Colors.blueAccent)),
             child: Visibility(
-                visible: _webViewVisibility,
-                child: getWebView(widget.paymentURL)),
+              visible: _webViewVisibility,
+              child: getWebView(widget.paymentURL),
+            ),
           ),
         ),
-      ])),
+      ]),
     );
   }
 
-  getWebView(String paymentURL) {
+  Widget getWebView(String paymentURL) {
     if (Platform.isAndroid)
       return getWebViewForAndroid(paymentURL);
     else

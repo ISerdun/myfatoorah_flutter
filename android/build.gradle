@@ -1,4 +1,4 @@
-group 'com.example.myfatoorah_flutter'
+group 'com.myfatoorah.flutter'
 version '1.0-SNAPSHOT'
 
 buildscript {

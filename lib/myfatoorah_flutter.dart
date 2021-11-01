@@ -547,9 +547,9 @@ class MyFatoorahFlutter implements _SDKListener {
     required String invoiceId,
     required String paymentURL,
     bool isDirectPayment = false,
+    NavigatorState? navigator,
   }) =>
-      Navigator.push(
-        myContext,
+      (navigator ?? Navigator.of(myContext)).push(
         MaterialPageRoute(
           builder: (context) => PaymentUrlHandler(
             invoiceId: invoiceId,

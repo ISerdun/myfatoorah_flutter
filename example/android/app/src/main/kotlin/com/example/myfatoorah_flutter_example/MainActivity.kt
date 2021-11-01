@@ -1,4 +1,4 @@
-package com.example.myfatoorah_flutter_example
+package com.myfatoorah.flutter_example
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity
