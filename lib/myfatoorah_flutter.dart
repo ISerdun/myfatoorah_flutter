@@ -3,11 +3,10 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+// import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:http/http.dart' as http;
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -197,6 +196,10 @@ class MyFatoorahFlutter implements _SDKListener {
         invoiceId: result.invoiceId.toString(),
         paymentURL: result.paymentURL!,
         isDirectPayment: false,
+        popRoute: (res) => Navigator.of(context).pop(res),
+        pushRoute: (widget) => Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => widget,
+        )),
       );
     } else
       func(
@@ -322,6 +325,10 @@ class MyFatoorahFlutter implements _SDKListener {
           invoiceId: invoiceId.toString(),
           paymentURL: result.data!.paymentURL!,
           isDirectPayment: true,
+          popRoute: (res) => Navigator.of(context).pop(res),
+          pushRoute: (widget) => Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => widget,
+          )),
         );
       }
     } else {
@@ -552,18 +559,18 @@ class MyFatoorahFlutter implements _SDKListener {
     required String invoiceId,
     required String paymentURL,
     bool isDirectPayment = false,
-    NavigatorState? navigator,
+    required Future<Object?> Function(Widget widget) pushRoute,
+    required void Function(Object? res) popRoute,
   }) =>
-      (navigator ?? Navigator.of(myContext)).push(
-        MaterialPageRoute(
-          builder: (context) => PaymentUrlHandler(
-            invoiceId: invoiceId,
-            paymentURL: paymentURL,
-            isDirectPayment: isDirectPayment,
-            sdkListener: this,
-            appBarSpecs: appBarSpecs,
-            navigator: navigator,
-          ),
+      pushRoute(
+        PaymentUrlHandler(
+          invoiceId: invoiceId,
+          paymentURL: paymentURL,
+          isDirectPayment: isDirectPayment,
+          sdkListener: this,
+          appBarSpecs: appBarSpecs,
+          popRoute: popRoute,
+          pushRoute: pushRoute,
         ),
       );
 

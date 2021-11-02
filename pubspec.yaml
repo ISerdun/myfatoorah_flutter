@@ -15,13 +15,11 @@ dependencies:
     sdk: flutter
 
   http: ^0.13.1
-
-  back_button_interceptor: ^5.0.1
-
   device_info: ^2.0.0
-
-  flutter_webview_plugin: ^0.4.0 #Support Apple pay
   webview_flutter: ^2.0.12
+
+  # back_button_interceptor: ^5.0.1
+  # flutter_webview_plugin: ^0.4.0 #Support Apple pay
 
 dev_dependencies:
   flutter_test:

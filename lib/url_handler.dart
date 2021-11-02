@@ -13,15 +13,17 @@ class PaymentUrlHandler extends StatefulWidget {
   final bool isDirectPayment;
   final _SDKListener sdkListener;
   final _AppBarSpecs appBarSpecs;
-  final NavigatorState? navigator;
+  final Future<Object?> Function(Widget widget) pushRoute;
+  final void Function(Object? res) popRoute;
 
   PaymentUrlHandler({
-    this.navigator,
     required this.invoiceId,
     required this.paymentURL,
     this.isDirectPayment = false,
     required this.sdkListener,
     required this.appBarSpecs,
+    required this.pushRoute,
+    required this.popRoute,
   });
 
   @override
@@ -32,9 +34,9 @@ class _PaymentUrlHandlerState extends State<PaymentUrlHandler> {
   double progress = 0.0;
   WebViewController? _webViewController;
   bool _webViewVisibility = true;
-  final flutterWebViewPlugin = FlutterWebviewPlugin();
+  // final flutterWebViewPlugin = FlutterWebviewPlugin();
   late StreamSubscription<double> _onProgressChanged;
-  late StreamSubscription<WebViewStateChanged> _onStateChanged;
+  // late StreamSubscription<WebViewStateChanged> _onStateChanged;
 
   @override
   void initState() {
@@ -42,43 +44,36 @@ class _PaymentUrlHandlerState extends State<PaymentUrlHandler> {
     // Enable hybrid composition.
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
 
-    BackButtonInterceptor.add(myCancelButtonInterceptor);
+    // if (Platform.isIOS) {
+    //   _onStateChanged = flutterWebViewPlugin.onStateChanged
+    //       .listen((WebViewStateChanged state) {
+    //     String url = state.url;
 
-    if (Platform.isIOS) {
-      _onStateChanged = flutterWebViewPlugin.onStateChanged
-          .listen((WebViewStateChanged state) {
-        String url = state.url;
+    //     if (mounted) {
+    //       if ((url.contains(AppConstants.callBackUrl!) ||
+    //           url.contains(AppConstants.errorUrl!))) {
+    //         checkCallBacks(url, widget.navigator?.context ?? context);
+    //       }
+    //     }
+    //   });
 
-        if (mounted) {
-          if ((url.contains(AppConstants.callBackUrl!) ||
-              url.contains(AppConstants.errorUrl!))) {
-            checkCallBacks(url, widget.navigator?.context ?? context);
-          }
-        }
-      });
-
-      _onProgressChanged =
-          flutterWebViewPlugin.onProgressChanged.listen((double progress) {
-        if (mounted) {
-          _setProgressBar(progress.toString());
-        }
-      });
-    }
+    //   _onProgressChanged =
+    //       flutterWebViewPlugin.onProgressChanged.listen((double progress) {
+    //     if (mounted) {
+    //       _setProgressBar(progress.toString());
+    //     }
+    //   });
+    // }
   }
 
   @override
   void dispose() {
-    BackButtonInterceptor.remove(myCancelButtonInterceptor);
+    //widget.sdkListener.onCancelButtonClicked(widget.invoiceId);
     if (Platform.isIOS) {
       _onProgressChanged.cancel();
-      _onStateChanged.cancel();
+      // _onStateChanged.cancel();
     }
     super.dispose();
-  }
-
-  bool myCancelButtonInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
-    widget.sdkListener.onCancelButtonClicked(widget.invoiceId);
-    return true;
   }
 
   void _setProgressBar(String value) {
@@ -134,10 +129,11 @@ class _PaymentUrlHandlerState extends State<PaymentUrlHandler> {
   }
 
   Widget getWebView(String paymentURL) {
-    if (Platform.isAndroid)
-      return getWebViewForAndroid(paymentURL);
-    else
-      return getWebViewForIOS(paymentURL);
+    return getWebViewForAndroid(paymentURL);
+    // if (Platform.isAndroid)
+    //   return getWebViewForAndroid(paymentURL);
+    // else
+    //   return getWebViewForIOS(paymentURL);
   }
 
   Widget getWebViewForAndroid(String paymentURL) {
@@ -162,23 +158,23 @@ class _PaymentUrlHandlerState extends State<PaymentUrlHandler> {
     );
   }
 
-  Widget getWebViewForIOS(String paymentURL) {
-    return WebviewScaffold(
-      url: paymentURL,
-      withJavascript: true,
-      mediaPlaybackRequiresUserGesture: false,
-      withZoom: true,
-      withLocalStorage: true,
-      hidden: false,
-      clearCache: true,
-      initialChild: Container(
-        color: Colors.white,
-        child: const Center(
-          child: Text('Waiting...'),
-        ),
-      ),
-    );
-  }
+  // Widget getWebViewForIOS(String paymentURL) {
+  //   return WebviewScaffold(
+  //     url: paymentURL,
+  //     withJavascript: true,
+  //     mediaPlaybackRequiresUserGesture: false,
+  //     withZoom: true,
+  //     withLocalStorage: true,
+  //     hidden: false,
+  //     clearCache: true,
+  //     initialChild: Container(
+  //       color: Colors.white,
+  //       child: const Center(
+  //         child: Text('Waiting...'),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Future<void> checkCallBacks(String url, BuildContext context) async {
     Uri uri = Uri.dataFromString(url);
@@ -196,7 +192,7 @@ class _PaymentUrlHandlerState extends State<PaymentUrlHandler> {
         isDirectPayment: widget.isDirectPayment,
       );
       log('[checkCallBacks] FOUND RESULT !! calling fetchPaymentStatusByAPI now');
-      widget.navigator?.pop(res);
+      widget.popRoute(res);
     }
   }
 
@@ -221,10 +217,10 @@ class _PaymentUrlHandlerState extends State<PaymentUrlHandler> {
   }
 
   Future<void> reloadWebView() async {
-    if (Platform.isIOS) {
-      await flutterWebViewPlugin.reload();
-    } else {
-      await _webViewController?.reload();
-    }
+    await _webViewController?.reload();
+    // if (Platform.isIOS) {
+    //   await flutterWebViewPlugin.reload();
+    // } else {
+    // }
   }
 }
