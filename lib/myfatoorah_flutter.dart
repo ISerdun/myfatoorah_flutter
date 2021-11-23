@@ -6,10 +6,9 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 // import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:http/http.dart' as http;
-import 'package:webview_flutter/webview_flutter.dart';
-
 import 'package:myfatoorah_flutter/model/MFError.dart';
 import 'package:myfatoorah_flutter/model/MyBaseResponse.dart';
 import 'package:myfatoorah_flutter/model/cancelrecurring/SDKCancelRecurringResponse.dart';
@@ -31,29 +30,32 @@ import 'package:myfatoorah_flutter/utils/ErrorsEnum.dart';
 import 'package:myfatoorah_flutter/utils/MFRecurringType.dart';
 import 'package:myfatoorah_flutter/utils/MFResult.dart';
 import 'package:myfatoorah_flutter/utils/SourceInfo.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import 'model/initsession/SDKInitSessionResponse.dart';
 import 'utils/ErrorUtils.dart';
+
+export 'package:myfatoorah_flutter/embeddedpayment/MFPaymentCardView.dart';
 
 // Export all MyFatoorah SDK classes to can be visible to sdk end users
 export 'package:myfatoorah_flutter/model/directpayment/MFCardInfo.dart';
 export 'package:myfatoorah_flutter/model/directpayment/MFDirectPaymentResponse.dart';
 export 'package:myfatoorah_flutter/model/executepayment/MFExecutePaymentRequest.dart';
 export 'package:myfatoorah_flutter/model/initpayment/MFInitiatePaymentRequest.dart';
-export 'package:myfatoorah_flutter/model/paymentstatus/MFPaymentStatusRequest.dart';
-export 'package:myfatoorah_flutter/model/sendpayment/MFSendPaymentRequest.dart';
-export 'package:myfatoorah_flutter/model/paymentstatus/SDKPaymentStatusResponse.dart';
-export 'package:myfatoorah_flutter/model/sendpayment/SDKSendPaymentResponse.dart';
 export 'package:myfatoorah_flutter/model/initpayment/SDKInitiatePaymentResponse.dart';
-export 'package:myfatoorah_flutter/utils/MFResult.dart';
+export 'package:myfatoorah_flutter/model/paymentstatus/MFPaymentStatusRequest.dart';
+export 'package:myfatoorah_flutter/model/paymentstatus/SDKPaymentStatusResponse.dart';
+export 'package:myfatoorah_flutter/model/sendpayment/MFSendPaymentRequest.dart';
+export 'package:myfatoorah_flutter/model/sendpayment/SDKSendPaymentResponse.dart';
 export 'package:myfatoorah_flutter/utils/MFAPILanguage.dart';
-export 'package:myfatoorah_flutter/utils/MFInvoiceLanguage.dart';
+export 'package:myfatoorah_flutter/utils/MFBaseURL.dart';
 export 'package:myfatoorah_flutter/utils/MFCurrencyISO.dart';
+export 'package:myfatoorah_flutter/utils/MFInvoiceLanguage.dart';
 export 'package:myfatoorah_flutter/utils/MFMobileISO.dart';
 export 'package:myfatoorah_flutter/utils/MFNotificationOption.dart';
 export 'package:myfatoorah_flutter/utils/MFRecurringType.dart';
-export 'package:myfatoorah_flutter/utils/MFBaseURL.dart';
-export 'package:myfatoorah_flutter/embeddedpayment/MFPaymentCardView.dart';
+export 'package:myfatoorah_flutter/utils/MFResult.dart';
+
 part 'url_handler.dart';
 
 // ignore: non_constant_identifier_names
@@ -61,7 +63,7 @@ var MFSDK = new MyFatoorahFlutter();
 
 class MyFatoorahFlutter implements _SDKListener {
   static const MethodChannel _channel =
-      const MethodChannel('myfatoorah_flutter');
+  const MethodChannel('myfatoorah_flutter');
 
   static Future<String?> get platformVersion async {
     final String? version = await _channel.invokeMethod('getPlatformVersion');
@@ -98,7 +100,7 @@ class MyFatoorahFlutter implements _SDKListener {
     request.sourceInfo = await SourceInfo(context).getData();
 
     http.Response response =
-        await callAPI(AppConstants.sendPayment, apiLang, jsonEncode(request));
+    await callAPI(AppConstants.sendPayment, apiLang, jsonEncode(request));
 
     final int statusCode = response.statusCode;
 
@@ -109,14 +111,16 @@ class MyFatoorahFlutter implements _SDKListener {
     }
 
     var result =
-        SDKSendPaymentResponse.fromJson(json.decode(response.body)).data;
+        SDKSendPaymentResponse
+            .fromJson(json.decode(response.body))
+            .data;
 
     func(MFResult.success(result));
   }
 
   // Initiate Payment
-  void initiatePayment(
-      MFInitiatePaymentRequest request, String apiLang, Function func) async {
+  void initiatePayment(MFInitiatePaymentRequest request, String apiLang,
+      Function func) async {
     this.apiLang = apiLang;
 
     http.Response response = await callAPI(
@@ -131,7 +135,9 @@ class MyFatoorahFlutter implements _SDKListener {
     }
 
     var result =
-        SDKInitiatePaymentResponse.fromJson(json.decode(response.body)).data;
+        SDKInitiatePaymentResponse
+            .fromJson(json.decode(response.body))
+            .data;
 
     if (Platform.isAndroid) {
       for (int i = 0; i < result!.paymentMethods!.length; i++) {
@@ -187,7 +193,9 @@ class MyFatoorahFlutter implements _SDKListener {
     }
 
     var result =
-        SDKExecutePaymentResponse.fromJson(json.decode(response.body)).data!;
+    SDKExecutePaymentResponse
+        .fromJson(json.decode(response.body))
+        .data!;
 
     if (!result.isDirectPayment!) {
       this.func = func;
@@ -197,9 +205,10 @@ class MyFatoorahFlutter implements _SDKListener {
         paymentURL: result.paymentURL!,
         isDirectPayment: false,
         popRoute: (res) => Navigator.of(context).pop(res),
-        pushRoute: (widget) => Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => widget,
-        )),
+        pushRoute: (widget) =>
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => widget,
+            )),
       );
     } else
       func(
@@ -209,8 +218,7 @@ class MyFatoorahFlutter implements _SDKListener {
   }
 
   // Execute Direct Payment
-  void executeDirectPayment(
-      BuildContext context,
+  void executeDirectPayment(BuildContext context,
       MFExecutePaymentRequest request,
       MFCardInfo mfCardInfo,
       String apiLang,
@@ -222,7 +230,9 @@ class MyFatoorahFlutter implements _SDKListener {
       func(
           "",
           MFResult.fail<MFDirectPaymentResponse>(MFError(
-              ErrorHelper.getValue(ErrorsEnum.INVALID_CARD_NUMBER_ERROR).code,
+              ErrorHelper
+                  .getValue(ErrorsEnum.INVALID_CARD_NUMBER_ERROR)
+                  .code,
               error)));
       return;
     }
@@ -251,7 +261,9 @@ class MyFatoorahFlutter implements _SDKListener {
     }
 
     var result =
-        SDKExecutePaymentResponse.fromJson(json.decode(response.body)).data!;
+    SDKExecutePaymentResponse
+        .fromJson(json.decode(response.body))
+        .data!;
 
     if (result.isDirectPayment!) {
       directPayment(context, apiLang, result.invoiceId, result.paymentURL,
@@ -265,8 +277,7 @@ class MyFatoorahFlutter implements _SDKListener {
 
   // Execute Direct Payment with Recurring
   @Deprecated("Use 'executeRecurringDirectPayment' instead.")
-  void executeDirectPaymentWithRecurring(
-      BuildContext context,
+  void executeDirectPaymentWithRecurring(BuildContext context,
       MFExecutePaymentRequest request,
       MFCardInfo mfCardInfo,
       int intervalDays,
@@ -276,8 +287,7 @@ class MyFatoorahFlutter implements _SDKListener {
     executeDirectPayment(context, request, mfCardInfo, apiLang, func);
   }
 
-  void executeRecurringDirectPayment(
-      BuildContext context,
+  void executeRecurringDirectPayment(BuildContext context,
       MFExecutePaymentRequest request,
       MFCardInfo mfCardInfo,
       MFRecurringType mfRecurringType,
@@ -293,7 +303,7 @@ class MyFatoorahFlutter implements _SDKListener {
     this.apiLang = apiLang;
 
     http.Response response =
-        await callAPI(paymentURL, apiLang, jsonEncode(request));
+    await callAPI(paymentURL, apiLang, jsonEncode(request));
 
     final int statusCode = response.statusCode;
 
@@ -326,9 +336,10 @@ class MyFatoorahFlutter implements _SDKListener {
           paymentURL: result.data!.paymentURL!,
           isDirectPayment: true,
           popRoute: (res) => Navigator.of(context).pop(res),
-          pushRoute: (widget) => Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => widget,
-          )),
+          pushRoute: (widget) =>
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => widget,
+              )),
         );
       }
     } else {
@@ -340,25 +351,25 @@ class MyFatoorahFlutter implements _SDKListener {
       func(
           invoiceId.toString(),
           MFResult.fail<MFDirectPaymentResponse>(new MFError(
-              ErrorHelper.getValue(ErrorsEnum.PAYMENT_TRANSACTION_FAILED_ERROR)
+              ErrorHelper
+                  .getValue(ErrorsEnum.PAYMENT_TRANSACTION_FAILED_ERROR)
                   .code,
               errorMsg)));
     }
   }
 
   // Payment Status
-  Future<MFResult> _paymentStatus(
-    String apiLang,
-    MFPaymentStatusRequest request,
-    Function? func, {
-    bool isDirectPayment = false,
-    DirectPaymentResponse? cardInfoResponse,
-    String? invoiceId,
-  }) async {
+  Future<MFResult> _paymentStatus(String apiLang,
+      MFPaymentStatusRequest request,
+      Function? func, {
+        bool isDirectPayment = false,
+        DirectPaymentResponse? cardInfoResponse,
+        String? invoiceId,
+      }) async {
     this.apiLang = apiLang;
 
     http.Response response =
-        await callAPI(AppConstants.paymentStatus, apiLang, jsonEncode(request));
+    await callAPI(AppConstants.paymentStatus, apiLang, jsonEncode(request));
 
     final int statusCode = response.statusCode;
 
@@ -374,11 +385,12 @@ class MyFatoorahFlutter implements _SDKListener {
     MFResult navResult;
     if (result.isSuccess != null && result.isSuccess!) {
       var transactionError =
-          _checkIsPaymentTransactionSuccess(result.data!.invoiceTransactions!)!;
+      _checkIsPaymentTransactionSuccess(result.data!.invoiceTransactions!)!;
 
       if (transactionError.isNotEmpty) {
         var mfError = new MFError(
-            ErrorHelper.getValue(ErrorsEnum.PAYMENT_TRANSACTION_FAILED_ERROR)
+            ErrorHelper
+                .getValue(ErrorsEnum.PAYMENT_TRANSACTION_FAILED_ERROR)
                 .code,
             transactionError);
         if (isDirectPayment) {
@@ -432,12 +444,12 @@ class MyFatoorahFlutter implements _SDKListener {
   }
 
   // Payment Status
-  void getPaymentStatus(
-      String apiLang, MFPaymentStatusRequest request, Function func) async {
+  void getPaymentStatus(String apiLang, MFPaymentStatusRequest request,
+      Function func) async {
     this.apiLang = apiLang;
 
     http.Response response =
-        await callAPI(AppConstants.paymentStatus, apiLang, jsonEncode(request));
+    await callAPI(AppConstants.paymentStatus, apiLang, jsonEncode(request));
 
     final int statusCode = response.statusCode;
 
@@ -451,11 +463,12 @@ class MyFatoorahFlutter implements _SDKListener {
 
     if (result.isSuccess != null && result.isSuccess!) {
       var transactionError =
-          _checkIsPaymentTransactionSuccess(result.data!.invoiceTransactions!)!;
+      _checkIsPaymentTransactionSuccess(result.data!.invoiceTransactions!)!;
 
       if (transactionError.isNotEmpty) {
         func(MFResult.fail<MFPaymentStatusResponse>(new MFError(
-            ErrorHelper.getValue(ErrorsEnum.PAYMENT_TRANSACTION_FAILED_ERROR)
+            ErrorHelper
+                .getValue(ErrorsEnum.PAYMENT_TRANSACTION_FAILED_ERROR)
                 .code,
             transactionError)));
       } else
@@ -463,7 +476,9 @@ class MyFatoorahFlutter implements _SDKListener {
     } else {
       var error = MyBaseResponse.fromJson(json.decode(response.body));
       func(MFResult.fail<MFPaymentStatusResponse>(new MFError(
-          ErrorHelper.getValue(ErrorsEnum.BAD_REQUEST_ERROR).code,
+          ErrorHelper
+              .getValue(ErrorsEnum.BAD_REQUEST_ERROR)
+              .code,
           parseErrorMessage(error))));
     }
   }
@@ -501,8 +516,8 @@ class MyFatoorahFlutter implements _SDKListener {
   }
 
   // Cancel Recurring Payment
-  void cancelRecurringPayment(
-      String recurringId, String apiLang, Function func) async {
+  void cancelRecurringPayment(String recurringId, String apiLang,
+      Function func) async {
     this.apiLang = apiLang;
 
     var queryParameters = {
@@ -523,7 +538,7 @@ class MyFatoorahFlutter implements _SDKListener {
     }
 
     var result =
-        SDKCancelRecurringResponse.fromJson(json.decode(response.body));
+    SDKCancelRecurringResponse.fromJson(json.decode(response.body));
 
 //      print(result.toJson());
 
@@ -537,9 +552,32 @@ class MyFatoorahFlutter implements _SDKListener {
   }
 
   // Initiate Session
-  void initiateSession(Function func) async {
+  void initiateSession(String sessionId,Function(MFInitiateSessionResponse) func) async {
+    var result = MFInitiateSessionResponse(
+        sessionId: sessionId, countryCode: "KWT");
+
+
+    // http.Response response =
+    //     await callAPI(AppConstants.initSession, apiLang, "{}");
+    //
+    // final int statusCode = response.statusCode;
+    //
+    // if (statusCode < 200 || statusCode >= 400) {
+    //   var mfError = getErrorMsg(statusCode, response.body);
+    //   func(MFResult.fail<String>(mfError));
+    //   return;
+    // }
+    //
+    // var result =
+    //     SDKInitiateSessionResponse.fromJson(json.decode(response.body)).data;
+    // //
+    func(result);
+  }
+
+
+  void initiateSessionTest(Function func) async {
     http.Response response =
-        await callAPI(AppConstants.initSession, apiLang, "{}");
+    await callAPI(AppConstants.initSession, apiLang, "{}");
 
     final int statusCode = response.statusCode;
 
@@ -611,7 +649,7 @@ abstract class _SDKListener {
 
 class MyfatoorahSdk {
   static const MethodChannel _channel =
-      const MethodChannel('myfatoorah_flutter');
+  const MethodChannel('myfatoorah_flutter');
 
   static Future<String?> get platformVersion async {
     final String? version = await _channel.invokeMethod('getPlatformVersion');

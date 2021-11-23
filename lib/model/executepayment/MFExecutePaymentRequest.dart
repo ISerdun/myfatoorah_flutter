@@ -28,9 +28,13 @@ class MFExecutePaymentRequest {
     this.invoiceValue = invoiceValue;
   }
 
+
   MFExecutePaymentRequest.constructor(double invoiceValue) {
     this.invoiceValue = invoiceValue;
   }
+
+  MFExecutePaymentRequest.constructorDefault();
+
 
   MFExecutePaymentRequest.fromJson(Map<String, dynamic> json) {
     paymentMethodId = json['PaymentMethodId'];
@@ -118,12 +122,11 @@ class CustomerAddress {
   String? address;
   String? addressInstructions;
 
-  CustomerAddress(
-      {this.block,
-      this.street,
-      this.houseBuildingNo,
-      this.address,
-      this.addressInstructions});
+  CustomerAddress({this.block,
+    this.street,
+    this.houseBuildingNo,
+    this.address,
+    this.addressInstructions});
 
   CustomerAddress.fromJson(Map<String, dynamic> json) {
     block = json['Block'];

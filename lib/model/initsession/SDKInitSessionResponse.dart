@@ -24,7 +24,7 @@ class MFInitiateSessionResponse {
   String? sessionId;
   String? countryCode;
 
-  MFInitiateSessionResponse({this.sessionId});
+  MFInitiateSessionResponse({this.sessionId,this.countryCode});
 
   MFInitiateSessionResponse.fromJson(Map<String, dynamic> json) {
     sessionId = json['SessionId'];

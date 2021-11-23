@@ -10,7 +10,8 @@ TODO: The following API token key for testing only, so that when you go live
 
 // You can get the API Token Key from here:
 // https://myfatoorah.readme.io/docs/test-token
-final String mAPIKey = "rLtt6JWvbUHDDhsZnfpAhpYk4dxYDQkbcPTyGaKp2TYqQgG7FGZ5Th_WD53Oq8Ebz6A53njUoo1w3pjU1D4vs_ZMqFiz_j0urb_BH9Oq9VZoKFoJEDAbRZepGcQanImyYrry7Kt6MnMdgfG5jn4HngWoRdKduNNyP4kzcp3mRv7x00ahkm9LAK7ZRieg7k1PDAnBIOG3EyVSJ5kK4WLMvYr7sCwHbHcu4A5WwelxYK0GMJy37bNAarSJDFQsJ2ZvJjvMDmfWwDVFEVe_5tOomfVNt6bOg9mexbGjMrnHBnKnZR1vQbBtQieDlQepzTZMuQrSuKn-t5XZM7V6fCW7oP-uXGX-sMOajeX65JOf6XVpk29DP6ro8WTAflCDANC193yof8-f5_EYY-3hXhJj7RBXmizDpneEQDSaSz5sFk0sV5qPcARJ9zGG73vuGFyenjPPmtDtXtpx35A-BVcOSBYVIWe9kndG3nclfefjKEuZ3m4jL9Gg1h2JBvmXSMYiZtp9MR5I6pvbvylU_PP5xJFSjVTIz7IQSjcVGO41npnwIxRXNRxFOdIUHn0tjQ-7LwvEcTXyPsHXcMD8WtgBh-wxR8aKX7WPSsT1O8d8reb2aR7K3rkV3K82K_0OgawImEpwSvp9MNKynEAJQS6ZHe_J_l77652xwPNxMRTMASk1ZsJL";
+final String mAPIKey =
+    "YcI4hYz8avvM8UerN833ACQui60VfSRnBvSB7sdcx_A49b6uO1YzoLEhGVYqCZtXezSDF3brM2U7jUo59nSNjFvcMWBTKhDIpVoPP0_q8A6EFtMDafyMpb9wy59L6MbUb_lxCpuJKJb6CIu6pLb_Yea409CHB46-HFmhBsqkvz4sVjsmvaP3DZjWgToGX3KO6Gi3VD6IV8NaW8wZcKgVVsb_5wE46CRsBCHD2K02i_qXi0pv_S6q7oqH-eKTMz6bqYijKPvMj82hkrx16E1pc0YEnkII6BjexvsJZu1oeK3Bgsd91ZVofFF8yAsSQDwPcsfooYQccK17l4AFqKp3NiIgy8vg2aHK--NxTDxjla8OGIyhR-9gjSgG_KdbMce6uBB-qw1F1MSzf3GVyFQCqO9piDofv9ivrEzzSsziPDyGuo0ptuNmIPEhLEWUYYSZ3J4Cj80igACMOk4uFTnrtAB4ab4OhE6MFyoq-PtjsGC-zG3eO8C9C4IdyU20OVEl3AilRr2E4V9DaPK0lA8iwSAPyWC9w2sNnRLcbB2bFJgP4yESFPcGqfCKEvvhxOcl9zW3gvII-0ZdrzUlVSCcLBdpEHeFHp3NtBXuE1IBPpzq5p8Xz_Qiax77BzFam8Ol7L2-7eF60kfayAo1W_RcfqxGivXdlQ_s9U4gkCg-X2C3iE09cstjGsi1SdYFY57vxwSpZQ";
 
 void main() {
   runApp(MyApp());
@@ -52,21 +53,20 @@ class _MyHomePageState extends State<MyHomePage> {
     if (mAPIKey.isEmpty) {
       setState(() {
         _response =
-            "Missing API Token Key.. You can get it from here: https://myfatoorah.readme.io/docs/test-token";
+        "Missing API Token Key.. You can get it from here: https://myfatoorah.readme.io/docs/test-token";
       });
       return;
     }
 
     // TODO, don't forget to init the MyFatoorah Plugin with the following line
     MFSDK.init(MFBaseURL.TEST, mAPIKey);
-    initiateSession();
     // (Optional) un comment the following lines if you want to set up properties of AppBar.
 
-//    MFSDK.setUpAppBar(
-//      title: "MyFatoorah Payment",
-//      titleColor: Colors.white,  // Color(0xFFFFFFFF)
-//      backgroundColor: Colors.lightBlue, // Color(0xFF000000)
-//      isShowAppBar: true); // For Android platform only
+    MFSDK.setUpAppBar(
+        title: "MyFatoorah Payment",
+        titleColor: Colors.white, // Color(0xFFFFFFFF)
+        backgroundColor: Colors.lightBlue, // Color(0xFF000000)
+        isShowAppBar: true); // For Android platform only
 
     // (Optional) un comment this line, if you want to hide the AppBar.
     // Note, if the platform is iOS, this line will not affected
@@ -74,82 +74,61 @@ class _MyHomePageState extends State<MyHomePage> {
     MFSDK.setUpAppBar(isShowAppBar: false);
   }
 
-  void initiateSession() {
-    MFSDK.initiateSession((MFResult<MFInitiateSessionResponse> result) =>
-    {
-      if(result.isSuccess()) {
-        mfPaymentCardView.load(result.response!)
-      }
-      else
-        {
-          setState(() {
-            print("Response: " + result.error!.toJson().toString().toString());
-            _response = result.error!.message!;
-          })
-        }
-    });
-  }
+  void initiateSession() {}
 
   void payWithEmbeddedPayment() {
-    var request = MFExecutePaymentRequest.constructor(0.100);
-    mfPaymentCardView.pay(
-        request,
+    mfPaymentCardView.syncServerSession(
         MFAPILanguage.EN,
-            (String invoiceId, MFResult<MFPaymentStatusResponse> result) =>
-        {
-          if (result.isSuccess())
-            {
-              setState(() {
-                print("invoiceId: " + invoiceId);
-                print("Response: " + result.response!.toJson().toString());
-                _response = result.response!.toJson().toString();
-              })
-            }
-          else
-            {
-              setState(() {
-                print("invoiceId: " + invoiceId);
-                print("Error: " + result.error!.toJson().toString());
-                _response = result.error!.message!;
-              })
-            }
-        });
+            (MFResult<String?> result) {
+
+print("SSSS");
+          // if (result.isSuccess()) {
+          //   print("Success: " + result.response!);
+          //   // setState(() {
+          //   //   print("Response: " +
+          //   //       result.response);
+          //   //   _response = result.response!.toJson().toString().toString();
+          //   // })
+          // } else {
+          //   setState(() {
+          //     print("Response: " +
+          //         result.error!.toJson().toString().toString());
+          //     _response = result.error!.message!;
+          //   });
+          // }
+        }
+    );
+
+    // var request = MFExecutePaymentRequest.constructor(0.100);
+    // mfPaymentCardView.pay(
+    //     request,
+    //     MFAPILanguage.EN,
+    //     (String invoiceId, MFResult<MFPaymentStatusResponse> result) => {
+    //           if (result.isSuccess())
+    //             {
+    //               setState(() {
+    //                 print("invoiceId: " + invoiceId);
+    //                 print("Response: " + result.response!.toJson().toString());
+    //                 _response = result.response!.toJson().toString();
+    //               })
+    //             }
+    //           else
+    //             {
+    //               setState(() {
+    //                 print("invoiceId: " + invoiceId);
+    //                 print("Error: " + result.error!.toJson().toString());
+    //                 _response = result.error!.message!;
+    //               })
+    //             }
+    //         });
   }
 
   /*
     Send Payment
    */
   void sendPayment() {
-    var request = MFSendPaymentRequest(
-        invoiceValue: 0.100,
-        customerName: "Customer name",
-        notificationOption: MFNotificationOption.LINK);
-
-    MFSDK.sendPayment(
-        context,
-        MFAPILanguage.EN,
-        request,
-        (MFResult<MFSendPaymentResponse> result) => {
-              if (result.isSuccess())
-                {
-                  setState(() {
-                    print("Response: " +
-                        result.response!.toJson().toString().toString());
-                    _response = result.response!.toJson().toString().toString();
-                  })
-                }
-              else
-                {
-                  setState(() {
-                    print("Response: " +
-                        result.error!.toJson().toString().toString());
-                    _response = result.error!.message!;
-                  })
-                }
-            });
-
-    setState(() {
-      _response = _loading;
+    MFSDK.initiateSession("0753cab9-5d4c-ec11-baf2-0022488426d2",(MFInitiateSessionResponse result) {
+      mfPaymentCardView.load(result);
     });
   }
 
@@ -162,22 +141,23 @@ class _MyHomePageState extends State<MyHomePage> {
     MFSDK.initiatePayment(
         request,
         MFAPILanguage.EN,
-        (MFResult<MFInitiatePaymentResponse> result) => {
-              if (result.isSuccess())
-                {
-                  setState(() {
-                    print("Response: " + result.response!.toJson().toString());
-                    _response = result.response!.toJson().toString().toString();
-                  })
-                }
-              else
-                {
-                  setState(() {
-                    print("Response: " + result.error!.toJson().toString());
-                    _response = result.error!.message!;
-                  })
-                }
-            });
+            (MFResult<MFInitiatePaymentResponse> result) =>
+        {
+          if (result.isSuccess())
+            {
+              setState(() {
+                print("Response: " + result.response!.toJson().toString());
+                _response = result.response!.toJson().toString().toString();
+              })
+            }
+          else
+            {
+              setState(() {
+                print("Response: " + result.error!.toJson().toString());
+                _response = result.error!.message!;
+              })
+            }
+        });
 
     setState(() {
       _response = _loading;
@@ -198,24 +178,25 @@ class _MyHomePageState extends State<MyHomePage> {
         context,
         request,
         MFAPILanguage.EN,
-        (String invoiceId, MFResult<MFPaymentStatusResponse> result) => {
-              if (result.isSuccess())
-                {
-                  setState(() {
-                    print("invoiceId: " + invoiceId);
-                    print("Response: " + result.response!.toJson().toString());
-                    _response = result.response!.toJson().toString().toString();
-                  })
-                }
-              else
-                {
-                  setState(() {
-                    print("invoiceId: " + invoiceId);
-                    print("Response: " + result.error!.toJson().toString());
-                    _response = result.error!.message!;
-                  })
-                }
-            });
+            (String invoiceId, MFResult<MFPaymentStatusResponse> result) =>
+        {
+          if (result.isSuccess())
+            {
+              setState(() {
+                print("invoiceId: " + invoiceId);
+                print("Response: " + result.response!.toJson().toString());
+                _response = result.response!.toJson().toString().toString();
+              })
+            }
+          else
+            {
+              setState(() {
+                print("invoiceId: " + invoiceId);
+                print("Response: " + result.error!.toJson().toString());
+                _response = result.error!.message!;
+              })
+            }
+        });
 
     setState(() {
       _response = _loading;
@@ -249,24 +230,25 @@ class _MyHomePageState extends State<MyHomePage> {
         request,
         mfCardInfo,
         MFAPILanguage.EN,
-        (String invoiceId, MFResult<MFDirectPaymentResponse> result) => {
-              if (result.isSuccess())
-                {
-                  setState(() {
-                    print("invoiceId: " + invoiceId);
-                    print("Response: " + result.response!.toJson().toString());
-                    _response = result.response!.toJson().toString().toString();
-                  })
-                }
-              else
-                {
-                  setState(() {
-                    print("invoiceId: " + invoiceId);
-                    print("Response: " + result.error!.toJson().toString());
-                    _response = result.error!.message!;
-                  })
-                }
-            });
+            (String invoiceId, MFResult<MFDirectPaymentResponse> result) =>
+        {
+          if (result.isSuccess())
+            {
+              setState(() {
+                print("invoiceId: " + invoiceId);
+                print("Response: " + result.response!.toJson().toString());
+                _response = result.response!.toJson().toString().toString();
+              })
+            }
+          else
+            {
+              setState(() {
+                print("invoiceId: " + invoiceId);
+                print("Response: " + result.error!.toJson().toString());
+                _response = result.error!.message!;
+              })
+            }
+        });
 
     setState(() {
       _response = _loading;
@@ -301,24 +283,25 @@ class _MyHomePageState extends State<MyHomePage> {
         mfCardInfo,
         MFRecurringType.monthly,
         MFAPILanguage.EN,
-        (String invoiceId, MFResult<MFDirectPaymentResponse> result) => {
-              if (result.isSuccess())
-                {
-                  setState(() {
-                    print("Response: " + invoiceId);
-                    print("Response: " + result.response!.toJson().toString());
-                    _response = result.response!.toJson().toString().toString();
-                  })
-                }
-              else
-                {
-                  setState(() {
-                    print("Response: " + invoiceId);
-                    print("Response: " + result.error!.toJson().toString());
-                    _response = result.error!.message!;
-                  })
-                }
-            });
+            (String invoiceId, MFResult<MFDirectPaymentResponse> result) =>
+        {
+          if (result.isSuccess())
+            {
+              setState(() {
+                print("Response: " + invoiceId);
+                print("Response: " + result.response!.toJson().toString());
+                _response = result.response!.toJson().toString().toString();
+              })
+            }
+          else
+            {
+              setState(() {
+                print("Response: " + invoiceId);
+                print("Response: " + result.error!.toJson().toString());
+                _response = result.error!.message!;
+              })
+            }
+        });
 
     setState(() {
       _response = _loading;
@@ -334,22 +317,23 @@ class _MyHomePageState extends State<MyHomePage> {
     MFSDK.getPaymentStatus(
         MFAPILanguage.EN,
         request,
-        (MFResult<MFPaymentStatusResponse> result) => {
-              if (result.isSuccess())
-                {
-                  setState(() {
-                    print("Response: " + result.response!.toJson().toString());
-                    _response = result.response!.toJson().toString().toString();
-                  })
-                }
-              else
-                {
-                  setState(() {
-                    print("Response: " + result.error!.toJson().toString());
-                    _response = result.error!.message!;
-                  })
-                }
-            });
+            (MFResult<MFPaymentStatusResponse> result) =>
+        {
+          if (result.isSuccess())
+            {
+              setState(() {
+                print("Response: " + result.response!.toJson().toString());
+                _response = result.response!.toJson().toString().toString();
+              })
+            }
+          else
+            {
+              setState(() {
+                print("Response: " + result.error!.toJson().toString());
+                _response = result.error!.message!;
+              })
+            }
+        });
 
     setState(() {
       _response = _loading;
@@ -363,22 +347,23 @@ class _MyHomePageState extends State<MyHomePage> {
     MFSDK.cancelToken(
         "Put your token here",
         MFAPILanguage.EN,
-        (MFResult<bool> result) => {
-              if (result.isSuccess())
-                {
-                  setState(() {
-                    print("Response: " + result.response.toString());
-                    _response = result.response.toString();
-                  })
-                }
-              else
-                {
-                  setState(() {
-                    print("Response: " + result.error!.toJson().toString());
-                    _response = result.error!.message!;
-                  })
-                }
-            });
+            (MFResult<bool> result) =>
+        {
+          if (result.isSuccess())
+            {
+              setState(() {
+                print("Response: " + result.response.toString());
+                _response = result.response.toString();
+              })
+            }
+          else
+            {
+              setState(() {
+                print("Response: " + result.error!.toJson().toString());
+                _response = result.error!.message!;
+              })
+            }
+        });
 
     setState(() {
       _response = _loading;
@@ -392,22 +377,23 @@ class _MyHomePageState extends State<MyHomePage> {
     MFSDK.cancelRecurringPayment(
         "Put RecurringId here",
         MFAPILanguage.EN,
-        (MFResult<bool> result) => {
-              if (result.isSuccess())
-                {
-                  setState(() {
-                    print("Response: " + result.response.toString());
-                    _response = result.response.toString();
-                  })
-                }
-              else
-                {
-                  setState(() {
-                    print("Response: " + result.error!.toJson().toString());
-                    _response = result.error!.message!;
-                  })
-                }
-            });
+            (MFResult<bool> result) =>
+        {
+          if (result.isSuccess())
+            {
+              setState(() {
+                print("Response: " + result.response.toString());
+                _response = result.response.toString();
+              })
+            }
+          else
+            {
+              setState(() {
+                print("Response: " + result.error!.toJson().toString());
+                _response = result.error!.message!;
+              })
+            }
+        });
 
     setState(() {
       _response = _loading;
@@ -433,12 +419,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       createPaymentCardView(),
                       RaisedButton(
-                        child: Text('Pay (Embedded Payment)'),
-                        onPressed: payWithEmbeddedPayment,
+                        child: Text('Init session'),
+                        onPressed: sendPayment,
                       ),
                       RaisedButton(
-                        child: Text('Send Payment'),
-                        onPressed: sendPayment,
+                        child: Text('Sync data with server'),
+                        onPressed: payWithEmbeddedPayment,
                       ),
                       RaisedButton(
                         child: Text('Initiate Payment'),

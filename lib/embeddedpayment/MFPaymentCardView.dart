@@ -180,14 +180,18 @@ class MFPaymentCardView extends StatefulWidget {
   }
 
   void load(MFInitiateSessionResponse initSessionResponse) {
-//    mMFInitSessionResponse = initSessionResponse;
     htmlPage!.load(
         generateHTML(initSessionResponse.sessionId!,
             initSessionResponse.countryCode!, this.newCardHeight),
         this.newCardHeight);
   }
 
-  void pay(MFExecutePaymentRequest request, String apiLang, Function callback) {
-    htmlPage!.submit(request, apiLang, callback);
+  //Get data from server
+  void syncServerSession(String apiLang, Function(MFResult<String?> result) callback) {
+    htmlPage!.serverSubmit(apiLang, callback);
   }
+
+  // void pay(MFExecutePaymentRequest request, String apiLang, Function callback) {
+  //   htmlPage!.submit(request, apiLang, callback);
+  // }
 }

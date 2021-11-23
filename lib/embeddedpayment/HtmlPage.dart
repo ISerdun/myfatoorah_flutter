@@ -13,7 +13,7 @@ class HtmlPage extends State<MFPaymentCardView> {
   static String html = "";
   static late MFExecutePaymentRequest request;
   static late String apiLang;
-  static late Function callback;
+  static late Function(MFResult<String?>) callback;
   static WebViewController? _webViewController;
 
   HtmlPage(String htmlCode) {
@@ -34,20 +34,10 @@ class HtmlPage extends State<MFPaymentCardView> {
         new Uri.dataFromString(html, mimeType: 'text/html').toString());
   }
 
-  void submit(MFExecutePaymentRequest req, String lang, Function func) {
-    if (req.paymentMethodId != null) {
-      func(
-          "",
-          MFResult.fail<MFPaymentStatusResponse>(new MFError(
-              ErrorHelper.getValue(
-                      ErrorsEnum.EMBEDDED_PAYMENT_WITH_PAYMENT_METHOD_ID_ERROR)
-                  .code,
-              ErrorHelper.getValue(
-                      ErrorsEnum.EMBEDDED_PAYMENT_WITH_PAYMENT_METHOD_ID_ERROR)
-                  .message)));
-      return;
-    }
-    request = req;
+  void serverSubmit(String lang, Function(MFResult<String?> result) func) {
+    MFExecutePaymentRequest defaultRequest =
+        MFExecutePaymentRequest.constructorDefault();
+    request = defaultRequest;
     apiLang = lang;
     callback = func;
     _webViewController!.evaluateJavascript('submit()');
@@ -86,14 +76,13 @@ class HtmlPage extends State<MFPaymentCardView> {
   void executePayment(BuildContext context, String sessionId) {
     request.sessionId = sessionId;
 
-    MFSDK.callExecutePayment(context, request, apiLang, callback);
+    request.invoiceValue = 1;
+    MFResult<String?> result = MFResult.success<String>(sessionId);
+    callback.call(result);
   }
 
   void returnPaymentFailed(String error) {
-    callback(
-        "",
-        MFResult.fail<MFPaymentStatusResponse>(new MFError(
-            ErrorHelper.getValue(ErrorsEnum.EMBEDDED_PAYMENT_ERROR).code,
-            error)));
+    // callback(MFResult.fail<MFPaymentStatusResponse>(new MFError(
+    //     ErrorHelper.getValue(ErrorsEnum.EMBEDDED_PAYMENT_ERROR).code, error)));
   }
 }
