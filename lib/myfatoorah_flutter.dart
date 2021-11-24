@@ -552,9 +552,9 @@ class MyFatoorahFlutter implements _SDKListener {
   }
 
   // Initiate Session
-  void initiateSession(String sessionId,Function(MFInitiateSessionResponse) func) async {
+  void initiateSession(String sessionId,String country,Function(MFInitiateSessionResponse) func) async {
     var result = MFInitiateSessionResponse(
-        sessionId: sessionId, countryCode: "KWT");
+        sessionId: sessionId, countryCode: country);
 
 
     // http.Response response =

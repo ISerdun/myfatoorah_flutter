@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
-import 'package:myfatoorah_flutter/model/MFError.dart';
-import 'package:myfatoorah_flutter/utils/ErrorsEnum.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../myfatoorah_flutter.dart';
@@ -13,11 +11,13 @@ class HtmlPage extends State<MFPaymentCardView> {
   static String html = "";
   static late MFExecutePaymentRequest request;
   static late String apiLang;
+  static late Function webViewReady;
   static late Function(MFResult<String?>) callback;
   static WebViewController? _webViewController;
 
-  HtmlPage(String htmlCode) {
+  HtmlPage(String htmlCode, Function webViewReadyCallback) {
     html = htmlCode;
+    webViewReady = webViewReadyCallback;
   }
 
   @override
@@ -54,6 +54,7 @@ class HtmlPage extends State<MFPaymentCardView> {
             javascriptMode: JavascriptMode.unrestricted,
             onWebViewCreated: (WebViewController webViewController) {
               _webViewController = webViewController;
+              webViewReady();
             },
             javascriptChannels: Set.from([
               JavascriptChannel(

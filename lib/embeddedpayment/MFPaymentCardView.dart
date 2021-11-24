@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:myfatoorah_flutter/embeddedpayment/HtmlPage.dart';
-import 'package:myfatoorah_flutter/model/executepayment/MFExecutePaymentRequest.dart';
 import 'package:myfatoorah_flutter/model/initsession/SDKInitSessionResponse.dart';
 import 'package:myfatoorah_flutter/utils/AppConstants.dart';
 
+import '../mfp_controller.dart';
 import '../myfatoorah_flutter.dart';
 
 class MFPaymentCardView extends StatefulWidget {
@@ -28,6 +28,8 @@ class MFPaymentCardView extends StatefulWidget {
   double fieldHeight = 32;
   String environment = "demo.myfatoorah.com";
   HtmlPage? htmlPage;
+  late MFPController controller;
+  final Function(MFPController) onFormReady;
 
   MFPaymentCardView({
     Key? key,
@@ -48,13 +50,32 @@ class MFPaymentCardView extends StatefulWidget {
     this.expiryDateLabel = "ExpiryDate",
     this.cvvLabel = "Security Code",
     this.showLabels = true,
+    required this.onFormReady,
   }) : super(key: key) {
     calculateHeights(cardHeight);
     setEnvironment();
-
+    controller = initController();
     var html = generateHTML("", "", newCardHeight);
 
-    this.htmlPage = HtmlPage(html);
+    this.htmlPage = HtmlPage(html, () {
+      onFormReady(controller);
+    });
+  }
+
+  MFPController initController() {
+    Function(String, String)? _initSession = (sessionId, country) {
+      MFSDK.initiateSession(sessionId, country,
+              (MFInitiateSessionResponse result) {
+            load(result);
+          });
+    };
+
+    Function(String, Function(MFResult<
+        String?> result) result)? _submitPayment = (language, result) {
+      syncServerSession(MFAPILanguage.EN, result);
+    };
+
+    return MFPController(_initSession, _submitPayment);
   }
 
   void calculateHeights(cardHeight) {
@@ -187,11 +208,12 @@ class MFPaymentCardView extends StatefulWidget {
   }
 
   //Get data from server
-  void syncServerSession(String apiLang, Function(MFResult<String?> result) callback) {
+  void syncServerSession(String apiLang,
+      Function(MFResult<String?> result) callback) {
     htmlPage!.serverSubmit(apiLang, callback);
   }
 
-  // void pay(MFExecutePaymentRequest request, String apiLang, Function callback) {
-  //   htmlPage!.submit(request, apiLang, callback);
-  // }
+// void pay(MFExecutePaymentRequest request, String apiLang, Function callback) {
+//   htmlPage!.submit(request, apiLang, callback);
+// }
 }
