@@ -65,7 +65,6 @@ class HtmlPage extends State<MFPaymentCardView> {
                     executePayment(context, message.message);
                   }),
               JavascriptChannel(
-                  name: 'Fail',
                   onMessageReceived: (JavascriptMessage message) {
                     returnPaymentFailed(message.message);
                   })
