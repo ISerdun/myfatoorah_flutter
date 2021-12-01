@@ -36,7 +36,7 @@ class HtmlPage extends State<MFPaymentCardView> {
 
   void serverSubmit(String lang, Function(MFResult<String?> result) func) {
     MFExecutePaymentRequest defaultRequest =
-        MFExecutePaymentRequest.constructorDefault();
+    MFExecutePaymentRequest.constructorDefault();
     request = defaultRequest;
     apiLang = lang;
     callback = func;
@@ -50,7 +50,9 @@ class HtmlPage extends State<MFPaymentCardView> {
       child: GestureDetector(
         onHorizontalDragUpdate: (updateDetails) {},
         onVerticalDragUpdate: (updateDetails) {},
-        child: WebView(
+        child: Theme(
+            data: new ThemeData.light(),
+            child: WebView(
             javascriptMode: JavascriptMode.unrestricted,
             onWebViewCreated: (WebViewController webViewController) {
               _webViewController = webViewController;
@@ -69,7 +71,7 @@ class HtmlPage extends State<MFPaymentCardView> {
                   })
             ]),
             initialUrl:
-                new Uri.dataFromString(html, mimeType: 'text/html').toString()),
+            new Uri.dataFromString(html, mimeType: 'text/html').toString())),
       ),
     );
   }
