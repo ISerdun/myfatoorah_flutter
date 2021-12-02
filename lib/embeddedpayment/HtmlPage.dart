@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:myfatoorah_flutter/model/MFError.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../myfatoorah_flutter.dart';
@@ -87,7 +88,7 @@ class HtmlPage extends State<MFPaymentCardView> {
   }
 
   void returnPaymentFailed(String error) {
-    MFResult<String?> result = MFResult.fail(error);
+    MFResult<String?> result = MFResult.fail(MFError(-1, error));
     callback.call(result);
   }
 }
