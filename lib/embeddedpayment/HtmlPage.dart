@@ -54,25 +54,26 @@ class HtmlPage extends State<MFPaymentCardView> {
         child: Theme(
             data: new ThemeData.light(),
             child: WebView(
-            javascriptMode: JavascriptMode.unrestricted,
-            onWebViewCreated: (WebViewController webViewController) {
-              _webViewController = webViewController;
-              webViewReady();
-            },
-            javascriptChannels: Set.from([
-              JavascriptChannel(
-                  name: 'Success',
-                  onMessageReceived: (JavascriptMessage message) {
-                    executePayment(context, message.message);
-                  }),
-              JavascriptChannel(
-                  name: 'Fail',
-                  onMessageReceived: (JavascriptMessage message) {
-                    returnPaymentFailed(message.message);
-                  })
-            ]),
-            initialUrl:
-            new Uri.dataFromString(html, mimeType: 'text/html').toString())),
+                javascriptMode: JavascriptMode.unrestricted,
+                onWebViewCreated: (WebViewController webViewController) {
+                  _webViewController = webViewController;
+                  webViewReady();
+                },
+                javascriptChannels: Set.from([
+                  JavascriptChannel(
+                      name: 'Success',
+                      onMessageReceived: (JavascriptMessage message) {
+                        executePayment(context, message.message);
+                      }),
+                  JavascriptChannel(
+                      name: 'Fail',
+                      onMessageReceived: (JavascriptMessage message) {
+                        returnPaymentFailed(message.message);
+                      })
+                ]),
+                initialUrl:
+                new Uri.dataFromString(html, mimeType: 'text/html')
+                    .toString())),
       ),
     );
   }
@@ -86,7 +87,7 @@ class HtmlPage extends State<MFPaymentCardView> {
   }
 
   void returnPaymentFailed(String error) {
-    // callback(MFResult.fail<MFPaymentStatusResponse>(new MFError(
-    //     ErrorHelper.getValue(ErrorsEnum.EMBEDDED_PAYMENT_ERROR).code, error)));
+    MFResult<String?> result = MFResult.fail(error);
+    callback.call(result);
   }
 }
