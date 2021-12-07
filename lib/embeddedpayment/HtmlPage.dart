@@ -47,35 +47,31 @@ class HtmlPage extends State<MFPaymentCardView> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: cardHeight.toDouble(),
-      child: GestureDetector(
-        onHorizontalDragUpdate: (updateDetails) {},
-        onVerticalDragUpdate: (updateDetails) {},
-        child: Theme(
-            data: new ThemeData.light(),
-            child: WebView(
-                javascriptMode: JavascriptMode.unrestricted,
-                onWebViewCreated: (WebViewController webViewController) {
-                  _webViewController = webViewController;
-                  webViewReady();
-                },
-                javascriptChannels: Set.from([
-                  JavascriptChannel(
-                      name: 'Success',
-                      onMessageReceived: (JavascriptMessage message) {
-                        executePayment(context, message.message);
-                      }),
-                  JavascriptChannel(
-                      name: 'Fail',
-                      onMessageReceived: (JavascriptMessage message) {
-                        returnPaymentFailed(message.message);
-                      })
-                ]),
-                initialUrl:
-                new Uri.dataFromString(html, mimeType: 'text/html')
-                    .toString())),
-      ),
+    return GestureDetector(
+      onHorizontalDragUpdate: (updateDetails) {},
+      onVerticalDragUpdate: (updateDetails) {},
+      child: WebView(
+          javascriptMode: JavascriptMode.unrestricted,
+          onWebViewCreated: (WebViewController webViewController) {
+            _webViewController = webViewController;
+            webViewReady();
+          },
+          javascriptChannels: Set.from([
+            JavascriptChannel(
+                name: 'Success',
+                onMessageReceived: (JavascriptMessage message) {
+                  executePayment(context, message.message);
+                }),
+            JavascriptChannel(
+                name: 'Fail',
+                onMessageReceived: (JavascriptMessage message) {
+                  returnPaymentFailed(message.message);
+                })
+          ]),
+          initialUrl:
+          new Uri.dataFromString(html, mimeType: 'text/html')
+              .toString()),
+
     );
   }
 

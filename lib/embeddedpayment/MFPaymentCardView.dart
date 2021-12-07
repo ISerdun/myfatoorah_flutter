@@ -24,7 +24,7 @@ class MFPaymentCardView extends StatefulWidget {
   final String cardNumberLabel;
   final String expiryDateLabel;
   final String cvvLabel;
-  int newCardHeight = 220;
+  int newCardHeight = 400;
   double fieldHeight = 32;
   String environment = "demo.myfatoorah.com";
   HtmlPage? htmlPage;
@@ -37,7 +37,7 @@ class MFPaymentCardView extends StatefulWidget {
     this.labelColor = Colors.black,
     this.errorColor = Colors.red,
     this.borderColor = Colors.grey,
-    cardHeight = 220,
+    cardHeight = 400,
     this.fontSize = 14,
     this.borderWidth = 1,
     this.borderRadius = 8,
@@ -65,13 +65,13 @@ class MFPaymentCardView extends StatefulWidget {
   MFPController initController() {
     Function(String, String)? _initSession = (sessionId, country) {
       MFSDK.initiateSession(sessionId, country,
-              (MFInitiateSessionResponse result) {
-            load(result);
-          });
+          (MFInitiateSessionResponse result) {
+        load(result);
+      });
     };
 
-    Function(String, Function(MFResult<
-        String?> result) result)? _submitPayment = (language, result) {
+    Function(String, Function(MFResult<String?> result) result)?
+        _submitPayment = (language, result) {
       syncServerSession(MFAPILanguage.EN, result);
     };
 
@@ -92,7 +92,7 @@ class MFPaymentCardView extends StatefulWidget {
 
     if (!showLabels) newCardHeight -= totalLabelsHeight;
 
-    fieldHeight = (newCardHeight - totalLabelsHeight) / 3.2;
+    fieldHeight = (newCardHeight - totalLabelsHeight) / 6;
   }
 
   void setEnvironment() {
@@ -208,8 +208,8 @@ class MFPaymentCardView extends StatefulWidget {
   }
 
   //Get data from server
-  void syncServerSession(String apiLang,
-      Function(MFResult<String?> result) callback) {
+  void syncServerSession(
+      String apiLang, Function(MFResult<String?> result) callback) {
     htmlPage!.serverSubmit(apiLang, callback);
   }
 
