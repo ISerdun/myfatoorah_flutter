@@ -399,75 +399,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: Column(children: [
-            Container(
-              child: Expanded(
-                flex: 1,
-                child: SingleChildScrollView(
-                  child: Column(
-//                    mainAxisAlignment: MainAxisAlignment.center,
-//                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(5.0),
-                      ),
-                      MFPaymentCardView(
-                        onFormReady: (MFPController controller) {
-                          this.controller = controller;
-                          controller.initSession(
-                              "f9d80cf0-8a53-ec11-baf2-0022488426d2", "KWT");
-                        },
-                      ),
-                      // RaisedButton(
-                      //   child: Text('Init session'),
-                      //   onPressed: sendPayment,
-                      // ),
-                      RaisedButton(
-                        child: Text('Sync data with server'),
-                        onPressed: () {
-                          controller.submitPayment(MFAPILanguage.EN, (result) {
-                            print("Success");
-                          });
-                        },
-                      ),
-                      RaisedButton(
-                        child: Text('Initiate Payment'),
-                        onPressed: initiatePayment,
-                      ),
-                      RaisedButton(
-                        child: Text('Execute Regular Payment'),
-                        onPressed: executeRegularPayment,
-                      ),
-                      RaisedButton(
-                        child: Text('Execute Direct Payment'),
-                        onPressed: executeDirectPayment,
-                      ),
-                      RaisedButton(
-                        child: Text('Execute Direct Payment with Recurring'),
-                        onPressed: executeDirectPaymentWithRecurring,
-                      ),
-                      RaisedButton(
-                        child: Text('Cancel Recurring Payment'),
-                        onPressed: cancelRecurringPayment,
-                      ),
-                      RaisedButton(
-                        child: Text('Cancel Token'),
-                        onPressed: cancelToken,
-                      ),
-                      RaisedButton(
-                        child: Text('Get Payment Status'),
-                        onPressed: getPaymentStatus,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Text(_response),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ]),
+          child: MFPaymentCardView(
+            onFormReady: (MFPController controller) {
+              this.controller = controller;
+              controller.initSession(
+                  "de24994a-315f-ec11-baf2-0022488426d2", "KWT");
+            },
+          ),
         ),
       ),
     );

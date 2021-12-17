@@ -1,12 +1,10 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:myfatoorah_flutter/model/MFError.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../myfatoorah_flutter.dart';
-import 'MFPaymentCardView.dart';
 
 class HtmlPage extends State<MFPaymentCardView> {
   static int cardHeight = 220;
@@ -38,7 +36,7 @@ class HtmlPage extends State<MFPaymentCardView> {
 
   void serverSubmit(String lang, Function(MFResult<String?> result) func) {
     MFExecutePaymentRequest defaultRequest =
-    MFExecutePaymentRequest.constructorDefault();
+        MFExecutePaymentRequest.constructorDefault();
     request = defaultRequest;
     apiLang = lang;
     callback = func;
@@ -51,6 +49,7 @@ class HtmlPage extends State<MFPaymentCardView> {
       onHorizontalDragUpdate: (updateDetails) {},
       onVerticalDragUpdate: (updateDetails) {},
       child: WebView(
+          zoomEnabled: false,
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
             _webViewController = webViewController;
@@ -69,9 +68,7 @@ class HtmlPage extends State<MFPaymentCardView> {
                 })
           ]),
           initialUrl:
-          new Uri.dataFromString(html, mimeType: 'text/html')
-              .toString()),
-
+              new Uri.dataFromString(html, mimeType: 'text/html').toString()),
     );
   }
 
