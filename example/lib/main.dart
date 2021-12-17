@@ -58,21 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
       });
       return;
     }
-
-    // TODO, don't forget to init the MyFatoorah Plugin with the following line
     MFSDK.init(MFBaseURL.TEST, mAPIKey);
-    // (Optional) un comment the following lines if you want to set up properties of AppBar.
-
-    MFSDK.setUpAppBar(
-        title: "MyFatoorah Payment",
-        titleColor: Colors.white, // Color(0xFFFFFFFF)
-        backgroundColor: Colors.lightBlue, // Color(0xFF000000)
-        isShowAppBar: true); // For Android platform only
-
-    // (Optional) un comment this line, if you want to hide the AppBar.
-    // Note, if the platform is iOS, this line will not affected
-
-    MFSDK.setUpAppBar(isShowAppBar: false);
   }
 
   void initiateSession() {}
@@ -397,16 +383,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: MFPaymentCardView(
-            onFormReady: (MFPController controller) {
-              this.controller = controller;
-              controller.initSession(
-                  "de24994a-315f-ec11-baf2-0022488426d2", "KWT");
-            },
-          ),
-        ),
+      body: MFPaymentCardView(
+        onFormReady: (MFPController controller) {
+          this.controller = controller;
+          controller.initSession("de24994a-315f-ec11-baf2-0022488426d2", "KWT");
+        },
       ),
     );
   }
