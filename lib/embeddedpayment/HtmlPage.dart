@@ -1,8 +1,8 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:myfatoorah_flutter/model/MFError.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter/material.dart';
 
 import '../myfatoorah_flutter.dart';
 
@@ -49,7 +49,6 @@ class HtmlPage extends State<MFPaymentCardView> {
       onHorizontalDragUpdate: (updateDetails) {},
       onVerticalDragUpdate: (updateDetails) {},
       child: WebView(
-          zoomEnabled: false,
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
             _webViewController = webViewController;
