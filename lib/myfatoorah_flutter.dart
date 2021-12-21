@@ -210,7 +210,7 @@ class MyFatoorahFlutter implements _SDKListener {
               ErrorHelper.getValue(ErrorsEnum.INCORRECT_PAYMENT_METHOD_ERROR)));
   }
 
-  void callExecuteApplePay(BuildContext context,
+  void callExecutePaymentWithRespone(BuildContext context,
       MFExecutePaymentRequest request, String apiLang, Function func) async {
     this.apiLang = apiLang;
 
