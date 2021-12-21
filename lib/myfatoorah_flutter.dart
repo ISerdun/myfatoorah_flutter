@@ -233,7 +233,7 @@ class MyFatoorahFlutter implements _SDKListener {
 
     if (statusCode < 200 || statusCode >= 400) {
       var mfError = getErrorMsg(statusCode, response.body);
-      func("", MFResult.fail<MFPaymentStatusResponse>(mfError));
+      func("", MFResult.fail<MFExecutePaymentResponse>(mfError));
       return;
     }
 
@@ -245,7 +245,7 @@ class MyFatoorahFlutter implements _SDKListener {
     } else
       func(
           result.invoiceId.toString(),
-          MFResult.fail<MFPaymentStatusResponse>(
+          MFResult.fail<MFExecutePaymentResponse>(
               ErrorHelper.getValue(ErrorsEnum.INCORRECT_PAYMENT_METHOD_ERROR)));
   }
 
