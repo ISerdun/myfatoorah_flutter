@@ -241,7 +241,7 @@ class MyFatoorahFlutter implements _SDKListener {
         SDKExecutePaymentResponse.fromJson(json.decode(response.body)).data!;
 
     if (!result.isDirectPayment!) {
-      MFResult.success<MFExecutePaymentResponse>(result);
+      func(MFResult.success<MFExecutePaymentResponse>(result));
     } else
       func(
           result.invoiceId.toString(),
