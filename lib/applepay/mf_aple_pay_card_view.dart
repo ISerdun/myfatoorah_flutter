@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:myfatoorah_flutter/embeddedpayment/HtmlPage.dart';
 import 'package:myfatoorah_flutter/model/initsession/SDKInitSessionResponse.dart';
 import 'package:myfatoorah_flutter/utils/AppConstants.dart';
 
 import '../mfp_controller.dart';
 import '../myfatoorah_flutter.dart';
+import 'html_apple_pay_page.dart';
 
-class MFPaymentCardView extends StatefulWidget {
+class MFAplePayCardView extends StatefulWidget {
   final Color inputColor;
   final Color labelColor;
   final Color errorColor;
@@ -26,14 +26,14 @@ class MFPaymentCardView extends StatefulWidget {
   int newCardHeight = 400;
   double fieldHeight = 32;
   String environment = "demo.myfatoorah.com";
-  HtmlPage? htmlPage;
+  HtmlApplePayPage? htmlPage;
   late MFPController controller;
   final Function(MFPController) onFormReady;
 
   final String sessionId;
   final String countryCode;
 
-  MFPaymentCardView({
+  MFAplePayCardView({
     Key? key,
     this.inputColor = Colors.black,
     this.labelColor = Colors.black,
@@ -61,7 +61,7 @@ class MFPaymentCardView extends StatefulWidget {
     controller = initController();
     var html = generateHTML(sessionId, countryCode, newCardHeight);
 
-    this.htmlPage = HtmlPage(html, () {
+    this.htmlPage = HtmlApplePayPage(html, () {
       onFormReady(controller);
     });
   }
@@ -79,7 +79,7 @@ class MFPaymentCardView extends StatefulWidget {
       syncServerSession(MFAPILanguage.EN, result);
     };
 
-    return MFPController(_submitPayment);
+    return MFPController( _submitPayment);
   }
 
   void calculateHeights(cardHeight) {
@@ -114,88 +114,51 @@ class MFPaymentCardView extends StatefulWidget {
   String generateHTML(String sessionId, String countryCode, int newCardHeight) {
     return """
       <!DOCTYPE html>
-      <html lang="en">
-      
-      <head>
-          <meta charset="UTF-8">
-          <meta http-equiv="X-UA-Compatible" content="IE=edge">
-          <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-          <title>Payment Page</title>
-          <style></style>
-      </head>
-      
-      <body>
-          <script src="https://$environment/cardview/v1/session.js"></script>
-          <div id="card-element"></div>
-        
-      <script type="text/javascript">
-          function callExecutePayment(sessionId) {
-            Success.postMessage(sessionId);
-          }
-          function returnPaymentFailed(error) {
-            Fail.postMessage(error);
-          }
-      </script>
-          <script>
-              var config = {
-                  countryCode: "$countryCode",
-                  sessionId: "$sessionId",
-                  cardViewId: "card-element",
-                  style: {
-                      cardHeight: $newCardHeight,
-                      input: {
-                          color: "#${convertToHex(inputColor)}",
-                          fontSize: "${fontSize}px",
-                          fontFamily: "sans-serif",
-                          inputHeight: "${fieldHeight}px",
-                          inputMargin: "10px",
-                          borderColor: "#${convertToHex(borderColor)}",
-                          borderWidth: "${borderWidth}px",
-                          borderRadius: "${borderRadius}px",
-                          boxShadow: "0px",
-                          placeHolder: {
-                              holderName: "$cardHolderNameHint",
-                              cardNumber: "$cardNumberHint",
-                              expiryDate: "$expiryDateHint",
-                              securityCode: "$cvvHint",
-                          }
-                      },
-                      label: {
-                          display: $showLabels,
-                          color: "#${convertToHex(labelColor)}",
-                          fontSize: "${fontSize}px",
-                          fontFamily: "sans-serif",
-                          text: {
-                              holderName: "$cardHolderNameLabel",
-                              cardNumber: "$cardNumberLabel",
-                              expiryDate: "$expiryDateLabel",
-                              securityCode: "$cvvLabel",
-                          },
-                      },
-                      error: {
-                          borderColor: "#${convertToHex(errorColor)}",
-                          borderRadius: "${borderRadius}px",
-                          boxShadow: "0px",
-                      },
-                  },
-              };
-              this.myFatoorah.init(config);
-       
-              function submit() {
+<html lang="en">
 
-                  this.myFatoorah.submit() // this.myFatoorah.submit(currency)
-                      .then(function(response) {
-                          callExecutePayment(response.SessionId);
-                      })
-                      .catch(function(error) {
-                          returnPaymentFailed(error);
-                      });        
-              };
-          </script>
-      
-      </body>
-      
-      </html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embedded Payment</title>
+    <style></style>
+</head>
+
+<body>
+    <script src="https://demo.myfatoorah.com/applepay/v1/applepay.js"></script> 
+   <div style="width:400px">
+   <div id="card-element"></div>
+   </div>
+    
+
+   <script>
+    window.onload = () => {
+        var config = {
+              countryCode: "KWT",
+              sessionId: "$sessionId",
+            currencyCode: "${countryCode}", // Here, add your Currency Code.
+            amount: "10", // Add the invoice amount.
+            cardViewId: "card-element",
+            callback: payment
+        };
+
+        myFatoorah.init(config);
+
+        function payment(response) {
+        
+            // Here you need to pass session id to you backend here 
+            var sessionId = response.SessionId;
+            var cardBrand = response.CardBrand;
+            callExecutePayment(sessionId);
+
+        };
+    }
+   </script>
+    
+</body>
+
+</html>
+   
         """;
   }
 

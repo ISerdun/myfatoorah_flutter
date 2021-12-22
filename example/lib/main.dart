@@ -383,10 +383,21 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
+      // body: MFAplePayCardView(
+      //   onFormReady: (MFPController controller) {
+      //     this.controller = controller;
+      //     // controller.initSession("024d5706-4d63-ec11-baf2-0022488426d2", "KWT");
+      //   },
+      //   sessionId: '024d5706-4d63-ec11-baf2-0022488426d2',
+      //   countryCode: 'KWT',
+      // ),
       body: MFPaymentCardView(
+        sessionId: '024d5706-4d63-ec11-baf2-0022488426d2',
+        countryCode: 'KWT',
         onFormReady: (MFPController controller) {
           this.controller = controller;
-          controller.initSession("de24994a-315f-ec11-baf2-0022488426d2", "KWT");
+          // controller.initSession("de24994a-315f-ec11-baf2-0022488426d2", "KWT");
         },
       ),
     );
